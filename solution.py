@@ -29,8 +29,12 @@ class LinearRegression:
         """
 
         # --- ENTER SOLUTION HERE ---
-        Phi = None
+        if len(np.shape(X)) == 1:
+            X = np.reshape(X, (len(X),1))
 
+        Phi = np.ones((X.shape[0],self.J+1))
+        for i in range(self.J+1):
+            Phi[:,i] = X[:,0]**i
         return Phi
 
     def _trigonometric_design_matrix(self, X):
@@ -43,8 +47,14 @@ class LinearRegression:
         """
 
         # --- ENTER SOLUTION HERE ---
-        Phi = None
+        if len(np.shape(X)) == 1:
+            X = np.reshape(X, (len(X),1))
 
+        Phi = np.ones((X.shape[0], 2*self.J+1))
+
+        for i in range(self.J+1):
+            Phi[:,2*i-1] = np.sin(2*np.pi*i*X[:,0])
+            Phi[:,2*i] = np.cos(2*np.pi*i*X[:,0])
 
         return Phi
 
@@ -63,9 +73,15 @@ class LinearRegression:
 
         Phi = self.design_matrix(X)
 
-        # --- ENTER SOLUTION HERE ---
-        self.mle_w = None
-        self.mle_variance = None
+        # --- ENTER SOLUTION HERE ---   
+        if len(np.shape(X)) == 1:
+            X = np.reshape(X, (len(X),1))
+        if len(np.shape(Y)) == 1:
+            Y = np.reshape(Y, (len(Y),1))
+
+        
+        self.mle_w = ((Y.T @ Phi) @ np.linalg.pinv(Phi.T @ Phi)).T
+        self.mle_variance = np.mean((Y - Phi @ self.mle_w)**2)
 
 
     def predict(self, X_predict):
@@ -80,9 +96,10 @@ class LinearRegression:
         # --- ENTER SOLUTION HERE ---
         # hint: remember that you can use functions like 'self.design_matrix(...)'
         #       and the fitted vector 'self.mle_w' here.
-
-
-        return Y_predict
+        if len(np.shape(X_predict)) == 1:
+            X_predict = np.reshape(X_predict, (len(X_predict),1))
+        Phi = self.design_matrix(X_predict)
+        return Phi @ self.mle_w
 
     def predict_range(self, N_points, xmin, xmax):
         """ Make a prediction along a predefined range.
@@ -98,9 +115,12 @@ class LinearRegression:
         """
 
         # --- ENTER SOLUTION HERE ---
-        X_predict = None
-        Y_predict = None
 
+        X_predict = np.linspace(xmin, xmax, num=N_points)
+        if len(np.shape(X_predict)) == 1:
+            X_predict = np.reshape(X_predict, (len(X_predict),1))
+
+        Y_predict = self.predict(X_predict)
 
         return X_predict, Y_predict
 
@@ -122,9 +142,24 @@ def leave_one_out_cross_validation(model, X, Y):
     # --- ENTER SOLUTION HERE ---
     # Hint: use the functions 'model.fit()' to fit on train folds and
     #       the function 'model.predict() to predict on test folds.
-    average_test_error = None
-    average_mle_variance = None
 
+    average_test_error = 0
+    average_mle_variance = 0
+
+    for i in range(N):
+        X_train = np.delete(X, i, axis = 0)
+        Y_train = np.delete(Y, i, axis = 0)
+        X_test = X[i]
+        Y_test = Y[i]
+
+        model.fit(X_train, Y_train)
+
+        Y_model = model.predict(X_test)
+        average_test_error +=  np.sum((Y_model-Y_test)**2)
+        average_mle_variance  += model.mle_variance
+
+    average_test_error /= N
+    average_mle_variance /= N
 
     return average_test_error, average_mle_variance
 

@@ -19,7 +19,7 @@ class TestCoursework(unittest.TestCase):
         target_output = np.array([[1.0, 1.0, 1.0],
                                   [1.0, 5.0, 25.0],
                                   [1.0, 3.0, 9.0],
-                                  [1.0, 5.0, 25.0]])
+                                  [1.0, 5.0, 25.0]])    
 
         correct = np.isclose(output, target_output, atol=1e-3).all()
 
@@ -38,7 +38,6 @@ class TestCoursework(unittest.TestCase):
                                   [1.00000000e+00, 1.22464680e-16, -1.00000000e+00],
                                   [1.00000000e+00, -2.15587355e-14, 1.00000000e+00],
                                   [1.00000000e+00, 1.22464680e-16, -1.00000000e+00]])
-
         correct = np.isclose(output, target_output, atol=1e-3).all()
 
         self.assertTrue(correct, f"The function 'polynomial_design_matrix' does not seem to be correct yet.")
