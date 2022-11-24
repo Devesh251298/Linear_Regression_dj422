@@ -33,8 +33,10 @@ class LinearRegression:
             X = np.reshape(X, (len(X),1))
 
         Phi = np.ones((X.shape[0],self.J+1))
+
         for i in range(self.J+1):
             Phi[:,i] = X[:,0]**i
+
         return Phi
 
     def _trigonometric_design_matrix(self, X):
@@ -117,6 +119,7 @@ class LinearRegression:
         # --- ENTER SOLUTION HERE ---
 
         X_predict = np.linspace(xmin, xmax, num=N_points)
+
         if len(np.shape(X_predict)) == 1:
             X_predict = np.reshape(X_predict, (len(X_predict),1))
 
@@ -155,7 +158,7 @@ def leave_one_out_cross_validation(model, X, Y):
         model.fit(X_train, Y_train)
 
         Y_model = model.predict(X_test)
-        average_test_error +=  np.sum((Y_model-Y_test)**2)
+        average_test_error += np.sum((Y_model-Y_test)**2)
         average_mle_variance  += model.mle_variance
 
     average_test_error /= N
